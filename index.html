@@ -280,7 +280,7 @@
      *
      * 之後如果要新增工具，主要只需要在 tools 陣列增加一筆資料。
      *
-     * category：分類名稱
+     * category：分類名稱（單一分類寫成字串；多個分類寫成陣列，例如 ["文書處理", "刑事"]）
      * title：工具名稱
      * description：工具說明
      * url：工具網址
@@ -303,7 +303,7 @@
         url: "https://tonyusagi537.github.io/cfrefundcal/"
       },
       {
-        categories: ["文書處理", "刑事"],
+        category: ["文書處理", "刑事"],
         title: "表格轉條列式文字",
         description: "將表格內容快速轉換成方便複製、整理及使用的條列式文字。",
         url: "https://tonyusagi537.github.io/table-to-bullet-point/"
@@ -311,6 +311,13 @@
     ];
 
     let currentCategory = "全部";
+
+    /*
+     * 取得工具的分類（支援字串或陣列）
+     */
+    function getCategories(tool) {
+      return Array.isArray(tool.category) ? tool.category : [tool.category];
+    }
 
     const categoryContainer = document.getElementById("categories");
     const toolContainer = document.getElementById("toolContainer");
@@ -321,7 +328,7 @@
      * 建立分類按鈕
      */
     function renderCategories() {
-      const categories = ["全部", ...new Set(tools.map(tool => tool.category))];
+      const categories = ["全部", ...new Set(tools.flatMap(getCategories))];
 
       categoryContainer.innerHTML = categories.map(category => `
         <button
@@ -351,10 +358,10 @@
       const filteredTools = tools.filter(tool => {
         const categoryMatch =
           currentCategory === "全部" ||
-          tool.category === currentCategory;
+          getCategories(tool).includes(currentCategory);
 
         const searchText =
-          `${tool.category} ${tool.title} ${tool.description}`.toLowerCase();
+          `${getCategories(tool).join(" ")} ${tool.title} ${tool.description}`.toLowerCase();
 
         const searchMatch =
           keyword === "" || searchText.includes(keyword);
@@ -368,10 +375,16 @@
       const groupedTools = {};
 
       filteredTools.forEach(tool => {
-        if (!groupedTools[tool.category]) {
-          groupedTools[tool.category] = [];
-        }
-        groupedTools[tool.category].push(tool);
+        getCategories(tool).forEach(category => {
+          // 選擇特定分類時，只顯示該分類區塊
+          if (currentCategory !== "全部" && category !== currentCategory) {
+            return;
+          }
+          if (!groupedTools[category]) {
+            groupedTools[category] = [];
+          }
+          groupedTools[category].push(tool);
+        });
       });
 
       toolContainer.innerHTML = Object.entries(groupedTools).map(
