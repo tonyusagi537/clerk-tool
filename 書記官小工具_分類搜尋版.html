@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="書記官小工具：司法行政、文書處理及常用工具">
+  <title>書記官小工具</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      background: #f5f7fa;
+      color: #263238;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 45px 20px 60px;
+    }
+
+    /* 標題 */
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: #78909c;
+      font-size: 15px;
+    }
+
+    /* 搜尋 */
+    .search-box {
+      margin: 0 auto 28px;
+      max-width: 650px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 18px 14px 45px;
+      border: 1px solid #dce3e8;
+      border-radius: 10px;
+      background: #fff;
+      color: #263238;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .search-input:focus {
+      border-color: #90a4ae;
+      box-shadow: 0 0 0 3px rgba(144, 164, 174, 0.12);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 17px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #90a4ae;
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    /* 分類按鈕 */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .category-btn {
+      border: 1px solid #dce3e8;
+      background: #fff;
+      color: #546e7a;
+      padding: 9px 17px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.15s ease;
+    }
+
+    .category-btn:hover {
+      border-color: #90a4ae;
+    }
+
+    .category-btn.active {
+      background: #546e7a;
+      border-color: #546e7a;
+      color: #fff;
+    }
+
+    /* 工具區 */
+    .category-section {
+      margin-bottom: 32px;
+    }
+
+    .category-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 14px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .category-count {
+      font-size: 12px;
+      font-weight: normal;
+      color: #90a4ae;
+      background: #e9eef1;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+
+    .tool-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    /* 工具卡片 */
+    .tool-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 125px;
+      padding: 20px 22px;
+      background: #fff;
+      border: 1px solid #e4e9ee;
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease,
+                  border-color 0.15s ease;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-2px);
+      border-color: #c7d1d7;
+      box-shadow: 0 7px 20px rgba(38, 50, 56, 0.08);
+    }
+
+    .tool-info {
+      min-width: 0;
+    }
+
+    .tool-title {
+      margin: 0 0 7px;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .tool-description {
+      margin: 0;
+      color: #78909c;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .tool-arrow {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f1f4f6;
+      color: #78909c;
+      font-size: 19px;
+      transition: background 0.15s ease;
+    }
+
+    .tool-card:hover .tool-arrow {
+      background: #e5eaed;
+    }
+
+    /* 沒有搜尋結果 */
+    .no-result {
+      display: none;
+      text-align: center;
+      padding: 45px 20px;
+      color: #90a4ae;
+    }
+
+    .no-result.show {
+      display: block;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #90a4ae;
+      font-size: 13px;
+    }
+
+    /* 手機版 */
+    @media (max-width: 700px) {
+      .container {
+        padding: 32px 15px 45px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .tool-list {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-card {
+        min-height: 110px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <header>
+      <h1>書記官小工具</h1>
+      <p class="subtitle">常用司法行政與文書處理工具</p>
+    </header>
+
+    <!-- 搜尋框 -->
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input
+        id="searchInput"
+        class="search-input"
+        type="search"
+        placeholder="搜尋工具名稱或說明..."
+        autocomplete="off"
+      >
+    </div>
+
+    <!-- 分類按鈕 -->
+    <nav id="categories" class="categories" aria-label="工具分類"></nav>
+
+    <!-- 工具內容 -->
+    <div id="toolContainer"></div>
+
+    <div id="noResult" class="no-result">
+      找不到符合條件的工具。
+    </div>
+
+    <footer>
+      書記官小工具
+    </footer>
+
+  </main>
+
+  <script>
+    /*
+     * ==========================================================
+     * 工具資料區
+     * ==========================================================
+     *
+     * 之後如果要新增工具，主要只需要在 tools 陣列增加一筆資料。
+     *
+     * category：分類名稱
+     * title：工具名稱
+     * description：工具說明
+     * url：工具網址
+     *
+     * 例如：
+     *
+     * {
+     *   category: "民事",
+     *   title: "法院管轄查詢",
+     *   description: "快速查詢案件管轄法院。",
+     *   url: "https://example.com/"
+     * }
+     */
+
+    const tools = [
+      {
+        category: "民事",
+        title: "民事裁判費退費試算",
+        description: "試算民事案件裁判費退費金額，快速取得試算結果。",
+        url: "https://tonyusagi537.github.io/cfrefundcal/"
+      },
+      {
+        category: "文書處理",
+        title: "表格轉條列式文字",
+        description: "將表格內容快速轉換成方便複製、整理及使用的條列式文字。",
+        url: "https://tonyusagi537.github.io/table-to-bullet-point/"
+      }
+    ];
+
+    let currentCategory = "全部";
+
+    const categoryContainer = document.getElementById("categories");
+    const toolContainer = document.getElementById("toolContainer");
+    const searchInput = document.getElementById("searchInput");
+    const noResult = document.getElementById("noResult");
+
+    /*
+     * 建立分類按鈕
+     */
+    function renderCategories() {
+      const categories = ["全部", ...new Set(tools.map(tool => tool.category))];
+
+      categoryContainer.innerHTML = categories.map(category => `
+        <button
+          type="button"
+          class="category-btn ${category === currentCategory ? "active" : ""}"
+          data-category="${escapeHtml(category)}"
+        >
+          ${escapeHtml(category)}
+        </button>
+      `).join("");
+
+      document.querySelectorAll(".category-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          currentCategory = button.dataset.category;
+          renderCategories();
+          renderTools();
+        });
+      });
+    }
+
+    /*
+     * 顯示工具
+     */
+    function renderTools() {
+      const keyword = searchInput.value.trim().toLowerCase();
+
+      const filteredTools = tools.filter(tool => {
+        const categoryMatch =
+          currentCategory === "全部" ||
+          tool.category === currentCategory;
+
+        const searchText =
+          `${tool.category} ${tool.title} ${tool.description}`.toLowerCase();
+
+        const searchMatch =
+          keyword === "" || searchText.includes(keyword);
+
+        return categoryMatch && searchMatch;
+      });
+
+      /*
+       * 依分類整理
+       */
+      const groupedTools = {};
+
+      filteredTools.forEach(tool => {
+        if (!groupedTools[tool.category]) {
+          groupedTools[tool.category] = [];
+        }
+        groupedTools[tool.category].push(tool);
+      });
+
+      toolContainer.innerHTML = Object.entries(groupedTools).map(
+        ([category, categoryTools]) => `
+          <section class="category-section">
+            <h2 class="category-title">
+              ${escapeHtml(category)}
+              <span class="category-count">${categoryTools.length}</span>
+            </h2>
+
+            <div class="tool-list">
+              ${categoryTools.map(tool => `
+                <a
+                  class="tool-card"
+                  href="${escapeAttribute(tool.url)}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div class="tool-info">
+                    <h3 class="tool-title">
+                      ${escapeHtml(tool.title)}
+                    </h3>
+                    <p class="tool-description">
+                      ${escapeHtml(tool.description)}
+                    </p>
+                  </div>
+                  <span class="tool-arrow">→</span>
+                </a>
+              `).join("")}
+            </div>
+          </section>
+        `
+      ).join("");
+
+      noResult.classList.toggle("show", filteredTools.length === 0);
+    }
+
+    /*
+     * 搜尋文字即時更新
+     */
+    searchInput.addEventListener("input", renderTools);
+
+    /*
+     * 基本 HTML 安全處理
+     */
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value);
+    }
+
+    /*
+     * 啟動
+     */
+    renderCategories();
+    renderTools();
+  </script>
+</body>
+</html>
